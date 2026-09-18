@@ -227,7 +227,8 @@
 
     <!-- Onboarding -->
     <string name="onboarding_back">Back</string>
-    <string name="onboarding_language_title">What would you\nlike to speak?</string>
+    <string name="onboarding_language_title">German for\ncare work.</string>
+    <string name="onboarding_language_subtitle">Practise handovers, ward rounds, talking to patients and relatives, and everyday life in Germany.</string>
     <string name="onboarding_meaning_title">A little help,\nin your language.</string>
     <string name="onboarding_meaning_subtitle">Mural speaks %1$s. Choose the language you read most easily for meanings.</string>
     <string name="onboarding_continue_button">Continue</string>

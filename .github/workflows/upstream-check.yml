@@ -1,0 +1,96 @@
+name: Upstream check
+
+# GitHub's "Watch" only notifies about issues, pull requests, releases and
+# discussions. This workflow also notifies about plain commits on the original
+# repository by opening (or updating) one issue in this fork.
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  UPSTREAM_REPO: Chuloo/mural
+  UPSTREAM_BRANCH: main
+  ISSUE_TITLE: "Upstream: neue Commits von Chuloo/mural"
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out fork
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Fetch upstream
+        run: git fetch --no-tags "https://github.com/${UPSTREAM_REPO}.git" "${UPSTREAM_BRANCH}:refs/remotes/upstream/${UPSTREAM_BRANCH}"
+
+      - name: Compare with fork
+        id: diff
+        run: |
+          set -euo pipefail
+          count=$(git rev-list --count "HEAD..upstream/${UPSTREAM_BRANCH}")
+          echo "count=${count}" >> "$GITHUB_OUTPUT"
+          {
+            echo "log<<EOF"
+            git log -n 50 --no-merges --date=short --format='- %ad `%h` %s' "HEAD..upstream/${UPSTREAM_BRANCH}"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+          echo "Upstream commits not in this fork: ${count}"
+
+      - name: Open or update the issue
+        if: steps.diff.outputs.count != '0'
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        env:
+          COUNT: ${{ steps.diff.outputs.count }}
+          LOG: ${{ steps.diff.outputs.log }}
+        with:
+          script: |
+            const { COUNT, LOG, UPSTREAM_REPO, UPSTREAM_BRANCH, ISSUE_TITLE } = process.env;
+            const { owner, repo } = context.repo;
+            const compareURL = `https://github.com/${owner}/${repo}/compare/main...${UPSTREAM_REPO.replace('/', ':')}:${UPSTREAM_BRANCH}`;
+            const body = [
+              `Das Original-Repository [${UPSTREAM_REPO}](https://github.com/${UPSTREAM_REPO}) hat **${COUNT}** Commit(s) auf \`${UPSTREAM_BRANCH}\`, die in diesem Fork noch fehlen.`,
+              '',
+              `Vergleich: ${compareURL}`,
+              '',
+              LOG,
+              '',
+              `_Automatisch aktualisiert am ${new Date().toISOString().slice(0, 10)} durch den Workflow "Upstream check"._`,
+            ].join('\n');
+            try {
+              await github.rest.issues.getLabel({ owner, repo, name: 'upstream' });
+            } catch (error) {
+              if (error.status !== 404) throw error;
+              await github.rest.issues.createLabel({ owner, repo, name: 'upstream', color: '0e8a16', description: 'Neue Commits im Original-Repository' });
+            }
+            const { data: issues } = await github.rest.issues.listForRepo({ owner, repo, state: 'open', labels: 'upstream', per_page: 100 });
+            const existing = issues.find(issue => issue.title === ISSUE_TITLE);
+            if (existing) {
+              if (existing.body !== body) {
+                await github.rest.issues.update({ owner, repo, issue_number: existing.number, body });
+                core.info(`Issue #${existing.number} aktualisiert.`);
+              } else {
+                core.info(`Issue #${existing.number} ist bereits aktuell.`);
+              }
+              return;
+            }
+            const { data: created } = await github.rest.issues.create({ owner, repo, title: ISSUE_TITLE, body, labels: ['upstream'] });
+            core.info(`Issue #${created.number} angelegt.`);
+
+      - name: Close the issue when the fork is up to date
+        if: steps.diff.outputs.count == '0'
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const { data: issues } = await github.rest.issues.listForRepo({ owner, repo, state: 'open', labels: 'upstream', per_page: 100 });
+            for (const issue of issues.filter(issue => issue.title === process.env.ISSUE_TITLE)) {
+              await github.rest.issues.createComment({ owner, repo, issue_number: issue.number, body: 'Der Fork enthält jetzt alle Upstream-Commits. Automatisch geschlossen.' });
+              await github.rest.issues.update({ owner, repo, issue_number: issue.number, state: 'closed' });
+            }

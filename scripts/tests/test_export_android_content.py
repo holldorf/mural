@@ -31,7 +31,9 @@ public struct LanguageModule: Identifiable, Sendable {{
 
 public enum LanguageRegistry {{
     public static let defaultID = "{default_id}"
+    public static let preferredID = "{preferred_id}"
     public static let all: [LanguageModule] = [{refs}]
+    public static let selectable: [LanguageModule] = [{selectable}]
     public static func module(for id: String) -> LanguageModule? {{ all.first {{ $0.id == id }} }}
 }}
 
@@ -84,15 +86,20 @@ public struct ConversationTheme: Identifiable, Hashable, Sendable {
 '''
 
 
-def write_core(root, names, extra_by_name=None):
-    """Write a minimal fake `Core/` tree with one Swift file per name in `names`."""
+def write_core(root, names, extra_by_name=None, selectable=None):
+    """Write a minimal fake `Core/` tree with one Swift file per name in `names`.
+
+    `selectable` lists the module names offered to learners; it defaults to the last module.
+    """
     extra_by_name = extra_by_name or {}
+    selectable = selectable or [names[-1]]
     core = root / 'Core'
     (core / 'Languages').mkdir(parents=True)
     (core / 'Themes.swift').write_text(THEMES_SWIFT)
     refs = ', '.join(f'.{n.lower()}' for n in names)
     (core / 'Languages/LanguageModule.swift').write_text(
-        LANGUAGE_MODULE_TEMPLATE.format(default_id=names[0][:2].lower(), refs=refs))
+        LANGUAGE_MODULE_TEMPLATE.format(default_id=names[0][:2].lower(), preferred_id=selectable[0][:2].lower(), refs=refs,
+                                        selectable=', '.join(f'.{n.lower()}' for n in selectable)))
     for n in names:
         extra = extra_by_name.get(n, '')
         (core / 'Languages' / f'{n}.swift').write_text(
@@ -177,6 +184,31 @@ class ExportAndroidContentTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             output = eac.generate(write_core(pathlib.Path(tmp), ['Spanish', 'Norwegian']))
             self.assertIn('const val defaultID = "sp"', output)
+
+    def test_selectable_and_preferred_language_come_from_the_swift_registry(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output = eac.generate(write_core(pathlib.Path(tmp), ['Norwegian', 'Spanish', 'German'], selectable=['German']))
+            self.assertIn('const val defaultID = "no"', output)
+            self.assertIn('const val preferredID = "ge"', output)
+            self.assertIn('val all = listOf(norwegian, spanish, german)', output)
+            self.assertIn('val selectable = listOf(german)', output)
+
+    def test_selectable_module_outside_the_registry_is_reported(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            core = write_core(pathlib.Path(tmp), ['Norwegian'], selectable=['German'])
+            with self.assertRaises(SystemExit) as ctx:
+                eac.generate(core)
+            self.assertIn('selectable', str(ctx.exception))
+            self.assertIn('german', str(ctx.exception))
+
+    def test_missing_selectable_registry_is_reported(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            core = write_core(pathlib.Path(tmp), ['Norwegian'])
+            path = core / 'Languages/LanguageModule.swift'
+            path.write_text(path.read_text().replace('public static let selectable', 'public static let offered'))
+            with self.assertRaises(SystemExit) as ctx:
+                eac.generate(core)
+            self.assertIn('LanguageRegistry.selectable', str(ctx.exception))
 
     def test_generation_is_deterministic(self):
         with tempfile.TemporaryDirectory() as tmp:

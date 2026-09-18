@@ -195,7 +195,7 @@ public struct SessionRecord: Codable, Identifiable, Sendable {
 }
 
 public struct Preferences: Codable, Sendable {
-    public var learningLanguageID = LanguageRegistry.defaultID
+    public var learningLanguageID = LanguageRegistry.preferredID
     public var meaningVisible = true
     public var meaningLanguage = "English"
     public var sessionMinutes = 15

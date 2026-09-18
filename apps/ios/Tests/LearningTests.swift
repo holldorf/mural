@@ -216,5 +216,5 @@ final class LearningTests: XCTestCase {
         XCTAssertNil(SourceLink(title: "bad", url: "https://user@example.com/page").safeURL)
         XCTAssertNotNil(SourceLink(title: "good", url: "https://www.nrk.no/").safeURL)
     }
-    func testTwentyFourDistinctThemes() { XCTAssertEqual(Set(LanguageModule.norwegian.themes.map(\.id)).count, 24) }
+    func testThirtySevenDistinctThemes() { XCTAssertEqual(Set(LanguageModule.norwegian.themes.map(\.id)).count, 37) }
 }

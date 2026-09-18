@@ -33,6 +33,49 @@ final class AdditionalLanguageTests: XCTestCase {
         XCTAssertEqual(MeaningLanguages.greeting(in: "Chinese (Simplified)"), "你好！")
     }
 
+    func testOnlyGermanIsSelectableWhileOldArchivesStillOpen() throws {
+        XCTAssertEqual(LanguageRegistry.defaultID, "nb")
+        XCTAssertEqual(LanguageRegistry.preferredID, "de")
+        XCTAssertEqual(LanguageRegistry.selectable.map(\.id), ["de"])
+        XCTAssertTrue(LanguageRegistry.selectable.allSatisfy { module in LanguageRegistry.all.contains { $0.id == module.id } })
+        XCTAssertEqual(Preferences().learningLanguageID, "de")
+        XCTAssertEqual(Archive().preferences.learningLanguageID, "de")
+        var archive = Archive(); archive.sessions = [session("nb"), session("es")]
+        let restored = try Archive.decode(archive.encoded())
+        XCTAssertEqual(restored.sessions.map(\.languageID), ["nb", "es"])
+    }
+
+    func testCareWorkThemesAreSharedAndOverriddenInGerman() throws {
+        let careIDs = ["handover", "admission", "medication", "relatives", "wardround", "pain", "bodycare", "emergency", "phonecall", "documentation", "dementia", "discharge", "team"]
+        XCTAssertEqual(Array(ConversationTheme.shared.prefix(careIDs.count).map(\.id)), careIDs)
+        XCTAssertEqual(Set(ConversationTheme.shared.map(\.id)).count, ConversationTheme.shared.count)
+        for theme in ConversationTheme.shared where careIDs.contains(theme.id) {
+            XCTAssertEqual(theme.category, "Care work", theme.id)
+            XCTAssertTrue(theme.situation.hasPrefix("Role-play only"), theme.id)
+        }
+        let german = try XCTUnwrap(LanguageRegistry.module(for: "de"))
+        for id in careIDs {
+            let override = try XCTUnwrap(german.themeOverrides[id], id)
+            XCTAssertEqual(override.category, "Care work", id)
+            XCTAssertTrue(override.situation.hasPrefix("Rollenspiel"), id)
+            XCTAssertFalse(override.situation.contains("Norway"), id)
+        }
+        XCTAssertEqual(german.themes.first { $0.id == "handover" }?.title, "Die Übergabe")
+        XCTAssertTrue(german.speechGuidance.contains("care worker"))
+        XCTAssertTrue(german.teachingFocus[2].contains("handover"))
+        let voice = TeachingPolicy.voice(language: german, learner: LearningEngine.project([], languageID: "de"), theme: german.themes[0], interests: "", meaningLanguage: "English")
+        XCTAssertTrue(voice.contains("Pflegekraft aus dem Ausland"))
+        XCTAssertTrue(voice.contains("Rollenspiel"))
+    }
+
+    func testMeaningLanguagesCoverCommonCareWorkerOriginLanguages() {
+        for name in ["Filipino", "Vietnamese", "Turkish", "Romanian", "Russian", "Hindi", "Croatian", "Serbian", "Albanian"] {
+            XCTAssertTrue(MeaningLanguages.all.contains(name), name)
+            XCTAssertNotEqual(MeaningLanguages.greeting(in: name), "Hi!", name)
+        }
+        XCTAssertEqual(Set(MeaningLanguages.all).count, MeaningLanguages.all.count)
+    }
+
     func testAllPromptPathsUseEachNewTargetAndItsRegionalGuidance() throws {
         for id in ids {
             let language = try XCTUnwrap(LanguageRegistry.module(for: id))

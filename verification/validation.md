@@ -177,3 +177,17 @@ Visual review after the full UI run found that the fixed consent footer crowded 
 After the owner unlocked the phone, the final build launched normally at 16:37:51 CEST. Its running process was confirmed. This reopened the persistent learning store without verification arguments.
 
 The device results verify the application/provider paths with synthetic typed input and real voice output. They do not verify recognition of a human speaker, pronunciation, tones, correction quality, unscripted interruptions, headphones or cellular operation. The proficient-speaker checks requested in issues #10–#13 remain open. Pinyin uses dictionary tones and may need correction for names, ambiguous words and connected-speech tone changes. The Android contribution is not integrated in this checkout, so there is no generated Android language catalog to update here.
+
+## Fork: German for care workers
+
+18 September 2026
+
+This fork ([holldorf/mural](https://github.com/holldorf/mural)) restricts the selectable learning language to German, adds thirteen shared `Care work` themes with German overrides, widens the subtitle languages to common care-worker origin languages, and turns the German teaching prompts towards ward vocabulary and role-play. `LanguageRegistry.all` and `defaultID` are unchanged so old archives in any of the eight languages still import and open.
+
+- **57 script tests passed** (`python3 -m unittest discover -s scripts/tests -t .`), including four new export tests for `selectable`, `preferredID` and the error paths.
+- `scripts/export_android_content.py` regenerated `Languages.kt`; `--check` reports no drift. `scripts/check_cross_platform.py` passed, so the changed German `introduction` prompt is identical on iOS and Android.
+- **114 core tests passed** with `swift test --package-path apps/ios` (Swift 6.3, Xcode 26.4), including three new tests: only German is selectable while `nb`/`es` archives still decode; the care-work themes are shared, ordered first, disclaimed as role-play and overridden in German; the new subtitle languages have greetings. The theme-count test was raised from 24 to 37.
+- The iPhone app target was **not compiled**: `xcodebuild` package resolution stalled twice on downloading the pinned WebRTC binary artifact on this machine (no bytes transferred). The two changed SwiftUI files pass `swiftc -parse`; a full build and the native UI tests remain open. No iPhone simulator is present on this Mac.
+- Android unit tests and lint were **not run**: no Java runtime or Android SDK is installed here. The Android changes (`Models.kt`, `Onboarding.kt`, `SettingsScreen.kt`, two `strings.xml`, unit and instrumented tests) were updated by hand and mirror the iOS changes.
+- The native UI tests (iOS `MuralUITests.swift`, Android `DesignReviewTest.kt`, `SettingsParityTest.kt`) were rewritten so that other languages are asserted absent and German/care-work content is asserted present, but they have not been executed.
+- No API key, account or device was used. No proficient-speaker or care-professional review of the care-work situations has taken place; that review is required before these prompts are relied upon.

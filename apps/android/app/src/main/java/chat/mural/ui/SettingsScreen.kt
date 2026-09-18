@@ -92,8 +92,11 @@ fun SettingsScreen(vm: MuralViewModel, onExport: () -> Unit, onImport: () -> Uni
             item {
                 SettingsGroup(stringResource(R.string.settings_just_your_pace),
                     stringResource(if (vm.isRunning) R.string.settings_language_running_footer else R.string.settings_language_footer)) {
+                    // Imported archives may still use a language that is no longer selectable; keep it listed so the row stays valid.
+                    val languageOptions = if (LanguageRegistry.selectable.any { it.id == vm.language.id }) LanguageRegistry.selectable
+                        else LanguageRegistry.selectable + vm.language
                     SettingsChoiceRow(stringResource(R.string.settings_learning_language), vm.language.settingsTitle, vm.language.id,
-                        LanguageRegistry.all.map { it.id to it.settingsTitle }, "settings-learning-language", !vm.isRunning, vm::selectLanguage)
+                        languageOptions.map { it.id to it.settingsTitle }, "settings-learning-language", !vm.isRunning, vm::selectLanguage)
                     SettingsDivider()
                     SettingsMeaningSwitch(prefs.meaningVisible, vm::toggleMeaning)
                     SettingsDivider()

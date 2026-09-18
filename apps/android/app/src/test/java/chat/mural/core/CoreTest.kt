@@ -66,7 +66,7 @@ class CoreTest {
     }
     @Test fun languageRegistryAndThemesStayStable() {
         assertEquals(listOf("nb","es","en","fr","de","it","pt","zh"),LanguageRegistry.all.map { it.id })
-        assertEquals(24,Themes.shared.map { it.id }.toSet().size)
+        assertEquals(37,Themes.shared.map { it.id }.toSet().size)
         assertEquals("Salut !",LanguageRegistry.get("fr")!!.greeting)
         for ((id, locale, greeting) in listOf(Triple("de","de-DE","Hallo!"),Triple("it","it-IT","Ciao!"),Triple("pt","pt-BR","Olá!"),Triple("zh","zh-CN","你好！"))) {
             assertEquals(locale,LanguageRegistry.get(id)!!.locale); assertEquals(greeting,LanguageRegistry.get(id)!!.greeting)
@@ -75,5 +75,20 @@ class CoreTest {
         assertEquals("你好！",MeaningLanguages.greeting("Chinese (Simplified)"))
         assertEquals("Norwegian",LanguageRegistry.get("nb")!!.name)
         assertEquals("Hei!",MeaningLanguages.greeting("Norwegian"))
+    }
+    @Test fun onlyGermanIsSelectableAndCareThemesAreTranslated() {
+        assertEquals("nb",LanguageRegistry.defaultID)
+        assertEquals("de",LanguageRegistry.preferredID)
+        assertEquals(listOf("de"),LanguageRegistry.selectable.map { it.id })
+        assertEquals("de",Preferences().learningLanguageID)
+        val careIDs=listOf("handover","admission","medication","relatives","wardround","pain","bodycare","emergency","phonecall","documentation","dementia","discharge","team")
+        val german=LanguageRegistry.get("de")!!
+        assertEquals(careIDs,Themes.shared.take(careIDs.size).map { it.id })
+        assertTrue(Themes.shared.filter { it.id in careIDs }.all { it.category=="Care work" && it.situation.startsWith("Role-play only") })
+        assertTrue(careIDs.all { german.themeOverrides.containsKey(it) && german.themeOverrides[it]!!.situation.startsWith("Rollenspiel") })
+        assertEquals("Die Übergabe",german.themes.first { it.id=="handover" }.title)
+        for (name in listOf("Filipino","Vietnamese","Turkish","Romanian","Russian","Hindi","Croatian","Serbian","Albanian")) {
+            assertTrue(name,MeaningLanguages.all.contains(name)); assertTrue(name,MeaningLanguages.greeting(name)!="Hi!")
+        }
     }
 }

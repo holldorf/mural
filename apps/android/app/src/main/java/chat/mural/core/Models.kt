@@ -146,7 +146,7 @@ data class SessionRecord(
 }
 @Serializable
 data class Preferences(
-    var learningLanguageID: String = LanguageRegistry.defaultID, var meaningVisible: Boolean = true,
+    var learningLanguageID: String = LanguageRegistry.preferredID, var meaningVisible: Boolean = true,
     var meaningLanguage: String = "English", var sessionMinutes: Int = 15, var hiddenWords: List<String> = emptyList(),
     var interests: String = "", var hasOnboarded: Boolean = false, var aiConsentVersion: Int? = null
 )

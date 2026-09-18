@@ -38,13 +38,26 @@ def struct_fields(language_module_swift_text):
     return re.findall(r'\bpublic let (\w+):', language_module_swift_text)
 
 
+def registry_module_names(text, property_name):
+    """Swift module names (e.g. `norwegian`) listed in `LanguageRegistry.<property_name>`."""
+    match = re.search(r'public static let ' + property_name + r':\s*\[LanguageModule\]\s*=\s*\[([^\]]*)\]', text)
+    if not match:
+        raise SystemExit(f'LanguageRegistry.{property_name} not found in apps/ios/Core/Languages/LanguageModule.swift.')
+    return re.findall(r'\.(\w+)', match.group(1))
+
+
+def registry_id(text, property_name):
+    """Quoted string constant `LanguageRegistry.<property_name>`."""
+    match = re.search(r'static let ' + property_name + r'\s*=\s*"([^"]+)"', text)
+    if not match:
+        raise SystemExit(f'LanguageRegistry.{property_name} not found in Core/Languages/LanguageModule.swift.')
+    return match.group(1)
+
+
 def language_files(core):
     """`apps/ios/Core/Languages/*.swift` files, ordered as declared in `LanguageRegistry.all`."""
     text = (core / 'Languages/LanguageModule.swift').read_text()
-    match = re.search(r'public static let all:\s*\[LanguageModule\]\s*=\s*\[([^\]]*)\]', text)
-    if not match:
-        raise SystemExit('LanguageRegistry.all not found in apps/ios/Core/Languages/LanguageModule.swift.')
-    names = re.findall(r'\.(\w+)', match.group(1))
+    names = registry_module_names(text, 'all')
     return [core / 'Languages' / f'{name[0].upper()}{name[1:]}.swift' for name in names]
 
 
@@ -79,10 +92,9 @@ def generate(core):
     """Render `Languages.kt` from the Swift language content under `core`."""
     registry_text = (core / 'Languages/LanguageModule.swift').read_text()
     known_fields = struct_fields(registry_text)
-    default_match = re.search(r'static let defaultID\s*=\s*"([^"]+)"', registry_text)
-    if not default_match:
-        raise SystemExit('LanguageRegistry.defaultID not found in Core/Languages/LanguageModule.swift.')
-    default_id = default_match.group(1)
+    default_id = registry_id(registry_text, 'defaultID')
+    preferred_id = registry_id(registry_text, 'preferredID')
+    selectable = registry_module_names(registry_text, 'selectable')
     simple_fields = [f for f in known_fields if f not in STRUCTURED_FIELDS]
 
     shared = (core / 'Themes.swift').read_text()
@@ -102,7 +114,7 @@ def generate(core):
     val defaultTitle get() = "A little $name"
     val talkTitle get() = "A little everyday $name"
     val settingsTitle get() = "$name · $variety"
-}''', '', 'object LanguageRegistry {', f'    const val defaultID = {quoted(default_id)}']
+}''', '', 'object LanguageRegistry {', f'    const val defaultID = {quoted(default_id)}', f'    const val preferredID = {quoted(preferred_id)}']
     module_names = []
     for path in language_files(core):
         text = path.read_text()
@@ -131,7 +143,11 @@ def generate(core):
                 overrides.append(quoted(m.group(1)) + ' to ' + theme(m.group(2).removesuffix(',')))
         args.append('        themeOverrides = mapOf(' + ',\n            '.join(overrides) + ')')
         lines += [f'    private val {module_name} = LanguageModule(', ',\n'.join(args), '    )']
+    unknown_selectable = [name for name in selectable if name not in module_names]
+    if unknown_selectable:
+        raise SystemExit(f"LanguageRegistry.selectable lists {', '.join(unknown_selectable)} which is not in LanguageRegistry.all.")
     lines += [f'    val all = listOf({", ".join(module_names)})',
+              f'    val selectable = listOf({", ".join(selectable)})',
               '    fun get(id: String) = all.firstOrNull { it.id == id }', '}', '',
               'object MeaningLanguages {']
     lines += meaning_languages(registry_text)

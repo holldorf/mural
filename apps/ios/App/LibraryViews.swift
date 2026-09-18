@@ -403,8 +403,11 @@ struct SettingsView: View {
 struct LearningLanguagePicker: View {
     let coordinator: ConversationCoordinator
     var body: some View {
-        Picker("Learning language", selection: Binding(get: { coordinator.language.id }, set: { coordinator.selectLanguage($0) })) {
-            ForEach(LanguageRegistry.all) { language in Text(language.settingsTitle).tag(language.id) }
+        // Imported archives may still use a language that is no longer selectable; keep it visible so the picker stays valid.
+        let current = coordinator.language
+        let options = LanguageRegistry.selectable.contains { $0.id == current.id } ? LanguageRegistry.selectable : LanguageRegistry.selectable + [current]
+        Picker("Learning language", selection: Binding(get: { current.id }, set: { coordinator.selectLanguage($0) })) {
+            ForEach(options) { language in Text(language.settingsTitle).tag(language.id) }
         }
         .pickerStyle(.menu)
         .disabled(coordinator.isRunning)

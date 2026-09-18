@@ -227,7 +227,8 @@
 
     <!-- Onboarding -->
     <string name="onboarding_back">Atrás</string>
-    <string name="onboarding_language_title">¿Qué te gustaría hablar?</string>
+    <string name="onboarding_language_title">Alemán para\nel trabajo de cuidados.</string>
+    <string name="onboarding_language_subtitle">Practica el cambio de turno, la visita médica, las conversaciones con pacientes y familiares, y la vida diaria en Alemania.</string>
     <string name="onboarding_meaning_title">Una pequeña ayuda,\nen tu idioma.</string>
     <string name="onboarding_meaning_subtitle">Mural habla %1$s. Elige el idioma en el que lees con más comodidad.</string>
     <string name="onboarding_continue_button">Continuar</string>

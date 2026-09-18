@@ -2,6 +2,17 @@
 
 **The language app you eventually delete.**
 
+> ## Fork: Deutsch für Pflegekräfte
+>
+> Dieser Fork von [Chuloo/mural](https://github.com/Chuloo/mural) ist für ausländische Pflegekräfte gedacht, die in Deutschland arbeiten oder dort anfangen wollen.
+>
+> - **Nur Deutsch** ist als Lernsprache wählbar (`LanguageRegistry.selectable`). Alte Backups in anderen Sprachen lassen sich weiterhin importieren und lesen.
+> - Der Themen-Tab enthält die Kategorie **„Care work“** mit 13 Pflege-Situationen als Rollenspiel: Übergabe, Aufnahmegespräch, Medikamentengabe, Angehörige, Visite, Schmerzen, Grundpflege, Sturz melden, Telefon, Pflegebericht, Demenz, Entlassung, Team. Alle Situationen sind Sprachübungen, keine medizinische, Dosierungs- oder Rechtsberatung.
+> - Untertitel gibt es zusätzlich in typischen Herkunftssprachen (u. a. Filipino, Vietnamesisch, Türkisch, Rumänisch, Russisch, Hindi, Kroatisch, Serbisch, Albanisch).
+> - Die App verbindet sich wie das Original direkt mit OpenAI über den **eigenen API-Key**; es gibt keinen Server dieses Forks.
+>
+> Die Pflege-Dialoge wurden noch **nicht** von einer Pflegefachperson geprüft. Der restliche Text unten ist die unveränderte Original-README.
+
 <p align="center">
   <img src="marketing/screenshots/iphone-17-spanish/01-hola.png" width="24%" alt="Mural greeting in Spanish with voice controls" />
   <img src="marketing/screenshots/iphone-17-spanish/02-conversacion.png" width="24%" alt="Spanish café conversation with English meaning subtitles" />

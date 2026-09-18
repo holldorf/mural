@@ -4,6 +4,21 @@ A learner can be comfortable in Norwegian and new to Spanish. Mural therefore gi
 
 Language-specific content lives in `apps/ios/Core/Languages/`. Each module defines its greeting, regional speech guidance, writing conventions, lemma rules, six teaching stages and cultural theme overrides. `LanguageRegistry` supplies the available choices to the UI.
 
+## `selectable` versus `all` (care-work fork)
+
+This fork offers only German to learners, without dropping the other modules from storage. `LanguageRegistry` therefore has two lists and two IDs:
+
+| Constant | Value | Used by |
+| --- | --- | --- |
+| `all` | all eight modules | archive validation, `module(for:)`, `selectLanguage`, the Android export |
+| `selectable` | `[.german]` | onboarding list, the Settings learning-language picker |
+| `defaultID` | `nb` | version 1 archive migration only; a storage key, never change it |
+| `preferredID` | `de` | the `Preferences` default on a fresh install |
+
+If an imported backup uses a language that is not selectable, the Settings picker keeps that language listed so the current selection stays valid, while onboarding pre-selects `preferredID` instead of the stored language. `scripts/export_android_content.py` exports `selectable` and `preferredID` to Kotlin and rejects a `selectable` entry that is not in `all`.
+
+The care-work situations are shared themes (category `Care work`, IDs `handover`, `admission`, `medication`, `relatives`, `wardround`, `pain`, `bodycare`, `emergency`, `phonecall`, `documentation`, `dementia`, `discharge`, `team`) because a module can only override existing shared IDs, not add its own. The German module overrides all thirteen with German titles and Germany-specific role-play instructions; other modules inherit the neutral English versions. Every situation starts with a role-play disclaimer and gives no real medical, dosage or legal advice.
+
 | Storage ID | Learning target | Locale |
 | --- | --- | --- |
 | `nb` | Norwegian Bokmål, Eastern Norwegian speech | `nb-NO` |

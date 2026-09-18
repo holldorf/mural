@@ -26,14 +26,20 @@ public struct LanguageModule: Identifiable, Sendable {
 }
 
 public enum LanguageRegistry {
+    /// Language assigned to version 1 archives during migration. Never change: it is a storage key.
     public static let defaultID = "nb"
+    /// Language a fresh install starts with. This fork is for care workers learning German.
+    public static let preferredID = "de"
+    /// Every module that can open an existing learning record. Storage validation uses this list.
     public static let all: [LanguageModule] = [.norwegian, .spanish, .english, .french, .german, .italian, .portuguese, .mandarin]
+    /// Modules a learner may pick in onboarding and Settings. Only German is offered in this fork.
+    public static let selectable: [LanguageModule] = [.german]
     public static func module(for id: String) -> LanguageModule? { all.first { $0.id == id } }
 }
 
 public enum MeaningLanguages {
-    public static let all = ["English", "French", "German", "Spanish", "Norwegian", "Portuguese", "Italian", "Chinese (Simplified)", "Polish", "Arabic", "Ukrainian"]
+    public static let all = ["English", "French", "German", "Spanish", "Norwegian", "Portuguese", "Italian", "Chinese (Simplified)", "Polish", "Arabic", "Ukrainian", "Filipino", "Vietnamese", "Turkish", "Romanian", "Russian", "Hindi", "Croatian", "Serbian", "Albanian"]
     public static func greeting(in language: String) -> String {
-        ["English": "Hi!", "French": "Salut !", "German": "Hallo!", "Spanish": "¡Hola!", "Norwegian": "Hei!", "Portuguese": "Olá!", "Italian": "Ciao!", "Chinese (Simplified)": "你好！", "Chinese": "你好！", "Polish": "Cześć!", "Arabic": "مرحبًا!", "Ukrainian": "Привіт!"][language] ?? "Hi!"
+        ["English": "Hi!", "French": "Salut !", "German": "Hallo!", "Spanish": "¡Hola!", "Norwegian": "Hei!", "Portuguese": "Olá!", "Italian": "Ciao!", "Chinese (Simplified)": "你好！", "Chinese": "你好！", "Polish": "Cześć!", "Arabic": "مرحبًا!", "Ukrainian": "Привіт!", "Filipino": "Kumusta!", "Vietnamese": "Xin chào!", "Turkish": "Merhaba!", "Romanian": "Salut!", "Russian": "Привет!", "Hindi": "नमस्ते!", "Croatian": "Bok!", "Serbian": "Zdravo!", "Albanian": "Përshëndetje!"][language] ?? "Hi!"
     }
 }
