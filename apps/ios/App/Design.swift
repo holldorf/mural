@@ -12,12 +12,18 @@ enum MuralColor {
     static let panels = [peach, lilac, sage, butter]
 }
 
+enum AppBrand {
+    static let name = "Deutsch mit Dr. Holldorf"
+    static let tagline = "Für deinen Alltag in der Pflege."
+}
+
 struct Brand: View {
     var body: some View {
         HStack(spacing: 8) {
             Circle().fill(RadialGradient(colors: [MuralColor.butter, MuralColor.orange], center: .topLeading, startRadius: 0, endRadius: 18)).frame(width: 17, height: 17)
-            Text("mural").font(.system(size: 30, weight: .bold, design: .rounded)).tracking(-1.6)
-        }.foregroundStyle(MuralColor.ink).accessibilityLabel("Mural")
+            Text("Deutsch mit\nDr. Holldorf").font(.system(.headline, design: .rounded, weight: .bold))
+                .fixedSize(horizontal: false, vertical: true)
+        }.foregroundStyle(MuralColor.ink).accessibilityElement(children: .ignore).accessibilityLabel(AppBrand.name)
     }
 }
 

@@ -23,12 +23,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import chat.mural.BuildConfig
+import chat.mural.R
 import kotlinx.coroutines.delay
 import kotlin.math.sin
 
@@ -66,12 +68,13 @@ fun MuralStartup(
 /** Uses the conversation orb directly, so startup cannot drift into a second Mural identity. */
 @Composable
 fun MuralSplash(modifier: Modifier = Modifier, phaseOverride: Float? = null) {
+    val appName = stringResource(R.string.app_name)
     val phase = phaseOverride ?: muralPhase()
     val pulse = 1f + sin(phase * 2.5f) * .032f
     BoxWithConstraints(
         modifier.fillMaxSize().background(MuralColors.Cream).testTag("mural-splash")
             .semantics(mergeDescendants = true) {
-                contentDescription = "Mural"
+                contentDescription = appName
                 progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
             },
         contentAlignment = Alignment.Center,

@@ -42,7 +42,7 @@ struct OnboardingView: View {
                             .frame(width: index == step ? 24 : 8, height: 6)
                     }
                 }.accessibilityElement(children: .ignore).accessibilityLabel("Step \(step + 1) of 2")
-            }.padding(.horizontal, 26).padding(.top, 8).frame(height: 54)
+            }.padding(.horizontal, 26).padding(.top, 8).frame(minHeight: 54)
 
             ScrollView {
                 VStack(spacing: step == 0 ? 22 : 18) {
@@ -54,7 +54,7 @@ struct OnboardingView: View {
                             .transition(.opacity)
                             .frame(height: step == 0 ? 76 : 60)
                             .accessibilityIdentifier("onboarding-greeting")
-                    }.padding(.top, step == 0 ? 8 : 0).accessibilityElement(children: .ignore).accessibilityLabel("Welcome to Mural")
+                    }.padding(.top, step == 0 ? 8 : 0).accessibilityElement(children: .ignore).accessibilityLabel("Welcome to \(AppBrand.name)")
 
                     Group {
                         if step == 0 { languageStep }
@@ -109,9 +109,9 @@ struct OnboardingView: View {
     private var languageStep: some View {
         VStack(spacing: 18) {
             VStack(spacing: 10) {
-                Text("German for\ncare work.")
+                Text(AppBrand.name)
                     .font(.system(.title2, design: .rounded, weight: .semibold)).tracking(-0.5)
-                Text("Practise handovers, ward rounds, talking to patients and relatives, and everyday life in Germany.")
+                Text(AppBrand.tagline)
                     .font(.subheadline).foregroundStyle(MuralColor.secondary)
             }.multilineTextAlignment(.center).accessibilityIdentifier("onboarding-language-title")
             VStack(spacing: 10) {
@@ -142,7 +142,7 @@ struct OnboardingView: View {
             VStack(spacing: 10) {
                 Text("A little help,\nin your language.")
                     .font(.system(.title2, design: .rounded, weight: .semibold)).tracking(-0.5)
-                Text("Mural speaks \(target.name). Choose the language you read most easily for meanings.")
+                Text("Your AI language partner speaks \(target.name). Choose the language you read most easily for meanings.")
                     .font(.subheadline).foregroundStyle(MuralColor.secondary)
             }.multilineTextAlignment(.center).accessibilityIdentifier("onboarding-meaning-title")
             Picker("Subtitle language", selection: Binding(get: { meaningLanguage }, set: { meaningLanguage = $0; hasChosenMeaning = true })) {

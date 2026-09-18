@@ -371,7 +371,8 @@ struct SettingsView: View {
                         .accessibilityIdentifier("settings-support")
                 } header: { Text("Help and privacy") }
                 Section {
-                    Text("Mural 0.1 · Personal build").font(.footnote)
+                    Text("\(AppBrand.name) 0.1 · Personal build").font(.footnote)
+                    Text(AppBrand.tagline).font(.footnote)
                     Text("Voice: GPT-Live-1 · Teacher: GPT-5.6 Luna").font(.footnote)
                     Link("OpenAI data controls", destination: URL(string: "https://developers.openai.com/api/docs/guides/your-data")!)
                     Text("Audio and selected text go to OpenAI while you practise. Requests disable provider storage where supported; abuse-monitoring retention may still apply. Raw audio is not saved by Mural.").font(.footnote)

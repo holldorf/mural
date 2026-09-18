@@ -118,11 +118,12 @@ fun MuralTheme(content: @Composable () -> Unit) {
 
 @Composable
 fun Brand(modifier: Modifier = Modifier) {
-    Row(modifier = modifier.semantics(mergeDescendants = true) { contentDescription = "Mural" },
+    val appName = stringResource(R.string.app_name)
+    Row(modifier = modifier.semantics(mergeDescendants = true) { contentDescription = appName },
         horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.size(17.dp).background(Brush.radialGradient(
             listOf(MuralColors.Butter, MuralColors.Orange), center = Offset.Zero, radius = 48f), CircleShape))
-        Text("mural", style = rounded(30, 38, FontWeight.ExtraBold, -1.6f), color = MuralColors.Ink)
+        Text(stringResource(R.string.app_wordmark), style = rounded(18, 22, FontWeight.ExtraBold), color = MuralColors.Ink)
     }
 }
 

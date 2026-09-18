@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Product identity stays the same in every UI language. -->
+    <string name="app_name" translatable="false">Deutsch mit Dr. Holldorf</string>
+    <string name="app_wordmark" translatable="false">Deutsch mit\nDr. Holldorf</string>
+    <string name="app_tagline" translatable="false">Für deinen Alltag in der Pflege.</string>
     <!-- Common -->
     <string name="common_ok">OK</string>
     <string name="common_cancel">Cancel</string>
@@ -193,7 +197,7 @@
     <string name="settings_openai_data_controls">OpenAI data controls</string>
     <string name="settings_open_source_notices">Open-source notices</string>
     <string name="settings_data_use_footer">Audio and selected text go to OpenAI while you practise. Requests disable provider storage where supported; abuse-monitoring retention may still apply. Raw audio is not saved by Mural.</string>
-    <string name="settings_app_version_footer">Mural %1$s · Android</string>
+    <string name="settings_app_version_footer">Deutsch mit Dr. Holldorf %1$s · Android\nFür deinen Alltag in der Pflege.</string>
     <string name="settings_corrections_label">Corrections</string>
     <string name="settings_corrections_value">Gently, as we talk</string>
     <string name="settings_open_api_keys">Open OpenAI API keys</string>
@@ -227,10 +231,10 @@
 
     <!-- Onboarding -->
     <string name="onboarding_back">Back</string>
-    <string name="onboarding_language_title">German for\ncare work.</string>
-    <string name="onboarding_language_subtitle">Practise handovers, ward rounds, talking to patients and relatives, and everyday life in Germany.</string>
+    <string name="onboarding_language_title">@string/app_name</string>
+    <string name="onboarding_language_subtitle">@string/app_tagline</string>
     <string name="onboarding_meaning_title">A little help,\nin your language.</string>
-    <string name="onboarding_meaning_subtitle">Mural speaks %1$s. Choose the language you read most easily for meanings.</string>
+    <string name="onboarding_meaning_subtitle">Your AI language partner speaks %1$s. Choose the language you read most easily for meanings.</string>
     <string name="onboarding_continue_button">Continue</string>
     <string name="onboarding_choose_continue_button">Choose and continue</string>
     <string name="onboarding_pace_note_step0">We\'ll find your pace through conversation.</string>

@@ -193,7 +193,7 @@
     <string name="settings_openai_data_controls">Controles de datos de OpenAI</string>
     <string name="settings_open_source_notices">Avisos de código abierto</string>
     <string name="settings_data_use_footer">El audio y el texto elegido se envían a OpenAI durante la práctica. Mural no guarda audio sin procesar.</string>
-    <string name="settings_app_version_footer">Mural %1$s · Android</string>
+    <string name="settings_app_version_footer">Deutsch mit Dr. Holldorf %1$s · Android\nFür deinen Alltag in der Pflege.</string>
     <string name="settings_corrections_label">Correcciones</string>
     <string name="settings_corrections_value">Con suavidad, mientras hablamos</string>
     <string name="settings_open_api_keys">Abrir las claves de API de OpenAI</string>
@@ -227,10 +227,10 @@
 
     <!-- Onboarding -->
     <string name="onboarding_back">Atrás</string>
-    <string name="onboarding_language_title">Alemán para\nel trabajo de cuidados.</string>
-    <string name="onboarding_language_subtitle">Practica el cambio de turno, la visita médica, las conversaciones con pacientes y familiares, y la vida diaria en Alemania.</string>
+    <string name="onboarding_language_title">@string/app_name</string>
+    <string name="onboarding_language_subtitle">@string/app_tagline</string>
     <string name="onboarding_meaning_title">Una pequeña ayuda,\nen tu idioma.</string>
-    <string name="onboarding_meaning_subtitle">Mural habla %1$s. Elige el idioma en el que lees con más comodidad.</string>
+    <string name="onboarding_meaning_subtitle">Tu compañero de idiomas con IA habla %1$s. Elige el idioma en el que lees con más comodidad.</string>
     <string name="onboarding_continue_button">Continuar</string>
     <string name="onboarding_choose_continue_button">Elegir y continuar</string>
     <string name="onboarding_pace_note_step0">Encontraremos tu ritmo conversando.</string>

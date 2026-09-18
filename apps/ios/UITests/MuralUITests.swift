@@ -42,7 +42,8 @@ final class MuralUITests: XCTestCase {
         for id in ["nb", "es", "en", "fr", "it", "pt", "zh"] {
             XCTAssertFalse(app.buttons["onboarding-language-\(id)"].exists, id)
         }
-        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "care work")).firstMatch.exists)
+        XCTAssertTrue(app.staticTexts["Deutsch mit Dr. Holldorf"].exists)
+        XCTAssertTrue(app.staticTexts["Für deinen Alltag in der Pflege."].exists)
     }
 
     func testGermanSelectionAtLargestAccessibilityTextSize() {
