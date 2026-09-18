@@ -75,9 +75,12 @@ final class MuralUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["A little everyday German"].exists)
         XCTAssertFalse(app.buttons["pinyin-toggle"].exists)
         app.tabBars.buttons["Themes"].tap()
-        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Care work")).firstMatch.exists)
+        XCTAssertTrue(app.buttons["Care work"].exists)
         XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Die Übergabe")).firstMatch.exists)
-        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Ein Kaffee?")).firstMatch.exists)
+        // The care-work tiles come first; the everyday tiles sit below the fold of the lazy grid.
+        app.buttons["Everyday"].tap()
+        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Ein Kaffee?")).firstMatch.waitForExistence(timeout: 5))
+        app.buttons["Care work"].tap()
         let screen = XCTAttachment(screenshot: app.screenshot())
         screen.name = "Themes - care work"; screen.lifetime = .keepAlways; add(screen)
         app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Die Übergabe")).firstMatch.tap()
@@ -182,6 +185,8 @@ final class MuralUITests: XCTestCase {
     func testThemeSurvivesNavigationToWords() {
         let app = launch()
         app.tabBars.buttons["Themes"].tap()
+        app.buttons["Everyday"].tap()
+        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Ein Kaffee?")).firstMatch.waitForExistence(timeout: 5))
         app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Ein Kaffee?")).firstMatch.tap()
         XCTAssertTrue(app.staticTexts["Ein Kaffee?"].exists)
         app.tabBars.buttons["Words"].tap()
